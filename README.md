@@ -4,4 +4,7 @@
 
 Как это будет выглядеть, можно [посмотреть здесь](https://mui-search.digitalberd.com)
 
+[Видео с разбором кода](https://youtu.be/T9e8MWcLPUg)
+
 ![](https://github.com/digitalberd/mui_search/blob/main/mui_search/public/Search.png?raw=true)
+
