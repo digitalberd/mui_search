@@ -1,4 +1,4 @@
-import React, {useState, useRef} from "react";
+import React, {useState, useRef, useEffect} from "react";
 import {IconButton, TextField} from "@mui/material";
 
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -27,6 +27,7 @@ const SearchComponent: React.FC = () => {
     const [clientId, setClientId] = useState<string>("");
     const [beginDate, setBeginDate] = useState<Dayjs | null>(null);
     const [endDate, setEndDate] = useState<Dayjs | null>(null);
+    const [mainString, setMainString] = useState<String>("")
 
 
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -53,12 +54,54 @@ const SearchComponent: React.FC = () => {
         if (e.target.value !== undefined){setClientId(e.target.value)}
     }
 
+    const handleMainString = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.value !== undefined){setMainString(e.target.value)}
+    }
+
+    const genMainString = () => {
+        if(conversionName != "" || conversionValue != "") {
+            let localString = '{'
+            if (conversionName.length > 0) {
+                localString += '"conversionName": "' + conversionName + '", '
+            }
+            if (conversionValue.length > 0) {
+                localString += '"conversionValue": "' + conversionValue + '", '
+            }
+            if (currency.length > 0) {
+                localString += '"currency": "' + currency + '", '
+            }
+            if (clientId.length > 0) {
+                localString += '"conversionValue": "' + clientId + '", '
+            }
+            if (beginDate != null) {
+                localString += '"beginDate": "' + beginDate.format('YYYY-MM-DD') + '", '
+            }
+            if (endDate != null) {
+                localString += '"endDate": "' + endDate.format('YYYY-MM-DD') + '", '
+            }
+            localString = localString.substring(0, localString.length - 2) + '}'
+            setMainString(localString)
+        }else{setMainString('')}
+    }
+
+    const clearAll = () => {
+        setConversionName("")
+        setConversionValue("")
+        setCurrency("")
+        setClientId("")
+        setBeginDate(null)
+        setEndDate(null)
+        setMainString("")
+    }
+
 
     const handleOk = (e: React.ChangeEvent<any>) => {
         console.log("Conversion name")
         console.log(conversionName)
+        console.log(conversionName.length)
         console.log("Conversion value")
         console.log(conversionValue)
+        console.log(conversionValue.length)
         console.log("Currency")
         console.log(currency)
         console.log("ClientId")
@@ -74,14 +117,14 @@ const SearchComponent: React.FC = () => {
     }
 
     const SearchButton = () => (
-        <IconButton>
+        <IconButton onClick={handleOk}>
             <SearchIcon />
         </IconButton>
     )
 
     const EndButtons = () => (
         <>
-            <IconButton>
+            <IconButton onClick={clearAll}>
                 <ClearIcon />
             </IconButton>
             <IconButton onClick={handleClick}>
@@ -90,6 +133,10 @@ const SearchComponent: React.FC = () => {
         </>
     )
 
+    useEffect(()=>{
+        genMainString();
+    },[conversionName, conversionValue, currency, clientId, beginDate, endDate])
+
     return(
         <>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -97,7 +144,8 @@ const SearchComponent: React.FC = () => {
                     id="searchField"
                     ref={fieldRef}
                     label="Search"
-                    value="hello"
+                    value={mainString}
+                    onChange={handleMainString}
                     InputProps={{
                         startAdornment: <SearchButton />,
                         endAdornment: <EndButtons />,
